@@ -5,10 +5,21 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "catboost>=1.2.10",
+    "imblearn>=0.0",
     "numpy>=2.4.4",
     "pandas>=3.0.2",
+    "psycopg2-binary>=2.9.12",
     "python-dotenv>=1.2.2",
     "scikit-learn>=1.8.0",
     "scipy>=1.17.1",
+    "sqlalchemy>=2.0.49",
     "supabase>=2.29.0",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
