@@ -12,6 +12,6 @@ def get_client() -> Client:
     return create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     client = get_client()
     print("Connexion Supabase OK :", client)

@@ -42,7 +42,7 @@ def save_to_database(df: pd.DataFrame, table: str = TABLE_NAME) -> None:
     print(f"{len(df)} prédictions insérées dans la table '{table}'.")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     print("Chargement du modèle...")
     model = load_model(MODEL_PATH)
 
