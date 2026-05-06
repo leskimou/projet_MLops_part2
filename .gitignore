@@ -5,6 +5,16 @@ build/
 dist/
 wheels/
 *.egg-info
+.coverage
 
 # Virtual environments
 .venv
+
+# Data files
+data/*
+
+# Environment variables
+.env
+
+# Model files
+models/*

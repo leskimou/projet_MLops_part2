@@ -1,0 +1,36 @@
+# Environnement virtuel (lourd, recréé par uv dans l'image)
+.venv/
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+.github/
+
+# Tests et cache
+tests/
+.pytest_cache/
+.coverage
+
+# Notebooks
+notebooks/
+
+# Scripts utilitaires
+scripts/
+
+# Fichiers de config locaux (secrets via env vars en prod)
+config/
+
+# Données et modèles (grands fichiers non nécessaires au build)
+data/
+models/
+
+# Bytecode Python
+__pycache__/
+*.py[oc]
+
+# Docker lui-même
+Dockerfile
+.dockerignore
+
