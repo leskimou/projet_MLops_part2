@@ -45,7 +45,7 @@ df_logs_500 = pd.DataFrame(logs_500_resp.data) if logs_500_resp.data else pd.Dat
 # 3. Prédictions pour les sk_id consultés (50 derniers)
 df_preds_50 = pd.DataFrame()
 if not df_logs_50.empty:
-    sk_ids_50 = df_logs_50["sk_id_curr"].tolist()
+    sk_ids_50 = df_logs_50["sk_id_curr"].unique().tolist()
     preds_50_resp = (
         db.table("predictions")
         .select("sk_id_curr, proba_class_1")
