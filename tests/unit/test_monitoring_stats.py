@@ -1,8 +1,6 @@
 import pandas as pd
 import pytest
-from src.utils.monitoring_stats import compute_metrics, build_histogram, build_evolution_chart
-
-THRESHOLD = 0.0913
+from src.utils.monitoring_stats import compute_metrics, build_histogram, build_evolution_chart, THRESHOLD
 
 
 def make_logs(n=5, inference_ms=50.0):
@@ -68,7 +66,8 @@ def test_build_histogram_retourne_une_figure():
 def test_build_histogram_contient_deux_traces():
     preds = make_predictions([1, 2, 3], [0.05, 0.15, 0.5])
     fig = build_histogram(preds)
-    assert len(fig.data) >= 1
+    # one trace per Risque category (Remboursé and Défaut)
+    assert len(fig.data) == 2
 
 
 # --- build_evolution_chart ---
