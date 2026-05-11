@@ -6,9 +6,11 @@ THRESHOLD = 0.0913
 
 
 def compute_metrics(logs_df: pd.DataFrame, predictions_df: pd.DataFrame) -> dict:
+    if logs_df.empty:
+        return {"taux_defaut": 0.0, "score_moyen": 0.0, "temps_moyen": 0.0, "n_clients": 0}
     merged = logs_df.merge(predictions_df, on="sk_id_curr", how="inner")
     if merged.empty:
-        return {"taux_defaut": 0.0, "score_moyen": 0.0, "temps_moyen": logs_df["inference_time_ms"].mean(), "n_clients": 0}
+        return {"taux_defaut": 0.0, "score_moyen": 0.0, "temps_moyen": float(logs_df["inference_time_ms"].mean()), "n_clients": 0}
     return {
         "taux_defaut": float((merged["proba_class_1"] >= THRESHOLD).mean() * 100),
         "score_moyen": float(merged["proba_class_1"].mean()),
