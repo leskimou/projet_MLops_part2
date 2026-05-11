@@ -4,7 +4,9 @@ from streamlit.testing.v1 import AppTest
 APP_PATH = "src/api/app.py"
 
 MOCK_CLIENT_USER = {"id": 2, "username": "client1", "role": "client"}
-MOCK_DEV_USER = {"id": 1, "username": "admin", "role": "developpeur"}
+MOCK_ADMIN_USER = {"id": 1, "username": "admin", "role": "administrateur"}
+
+THRESHOLD = 0.0913
 
 
 def make_mock_supabase(data):
@@ -114,11 +116,11 @@ def test_app_avertit_si_saisie_decimale():
     assert any("valide" in w.value for w in at.warning)
 
 
+# proba_class_1 < THRESHOLD → classe 0 (remboursé)
 def test_app_client_trouve_credit_rembourse():
     mock_client = make_mock_supabase([{
-        "predicted_class": 0,
-        "proba_class_0": 0.85,
-        "proba_class_1": 0.15,
+        "proba_class_0": 0.97,
+        "proba_class_1": 0.03,
     }])
     with patch("src.utils.database.get_client", return_value=mock_client):
         at = app_logged_in(MOCK_CLIENT_USER)
@@ -129,9 +131,9 @@ def test_app_client_trouve_credit_rembourse():
     assert len(at.metric) == 2
 
 
+# proba_class_1 >= THRESHOLD → classe 1 (défaut)
 def test_app_client_trouve_defaut_remboursement():
     mock_client = make_mock_supabase([{
-        "predicted_class": 1,
         "proba_class_0": 0.2,
         "proba_class_1": 0.8,
     }])
@@ -156,7 +158,6 @@ def test_app_client_non_trouve():
 
 def test_app_affiche_les_deux_metriques():
     mock_client = make_mock_supabase([{
-        "predicted_class": 0,
         "proba_class_0": 0.72,
         "proba_class_1": 0.28,
     }])
@@ -170,14 +171,41 @@ def test_app_affiche_les_deux_metriques():
     assert any("défaut" in label for label in labels)
 
 
-def test_app_developpeur_voit_section_debug():
+# Seuil exact : proba juste en dessous → remboursé
+def test_seuil_juste_en_dessous_donne_credit_rembourse():
     mock_client = make_mock_supabase([{
-        "predicted_class": 0,
+        "proba_class_0": 1 - 0.09,
+        "proba_class_1": 0.09,
+    }])
+    with patch("src.utils.database.get_client", return_value=mock_client):
+        at = app_logged_in(MOCK_CLIENT_USER)
+        at.text_input[0].set_value("100004")
+        next(b for b in at.button if b.label == "Rechercher").click()
+        at.run()
+    assert any("remboursé" in s.value for s in at.success)
+
+
+# Seuil exact : proba égale au seuil → défaut
+def test_seuil_egal_donne_defaut():
+    mock_client = make_mock_supabase([{
+        "proba_class_0": 1 - THRESHOLD,
+        "proba_class_1": THRESHOLD,
+    }])
+    with patch("src.utils.database.get_client", return_value=mock_client):
+        at = app_logged_in(MOCK_CLIENT_USER)
+        at.text_input[0].set_value("100005")
+        next(b for b in at.button if b.label == "Rechercher").click()
+        at.run()
+    assert any("Défaut" in e.value for e in at.error)
+
+
+def test_app_administrateur_voit_section_debug():
+    mock_client = make_mock_supabase([{
         "proba_class_0": 0.9,
         "proba_class_1": 0.1,
     }])
     with patch("src.utils.database.get_client", return_value=mock_client):
-        at = app_logged_in(MOCK_DEV_USER)
+        at = app_logged_in(MOCK_ADMIN_USER)
         at.text_input[0].set_value("100001")
         next(b for b in at.button if b.label == "Rechercher").click()
         at.run()
@@ -186,7 +214,6 @@ def test_app_developpeur_voit_section_debug():
 
 def test_app_client_ne_voit_pas_section_debug():
     mock_client = make_mock_supabase([{
-        "predicted_class": 0,
         "proba_class_0": 0.9,
         "proba_class_1": 0.1,
     }])
