@@ -93,3 +93,10 @@ def test_build_evolution_chart_groupe_par_semaine():
     fig = build_evolution_chart(df)
     # 2 weeks = 2 points on the curve
     assert len(fig.data[0].x) == 2
+
+
+def test_compute_metrics_retourne_zeros_si_logs_vide():
+    logs = pd.DataFrame(columns=["sk_id_curr", "inference_time_ms"])
+    preds = make_predictions([1, 2, 3], [0.5, 0.6, 0.7])
+    result = compute_metrics(logs, preds)
+    assert result == {"taux_defaut": 0.0, "score_moyen": 0.0, "temps_moyen": 0.0, "n_clients": 0}
