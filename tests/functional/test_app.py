@@ -93,27 +93,35 @@ def test_app_affiche_bouton_rechercher():
     assert any(b.label == "Rechercher" for b in at.button)
 
 
-def test_app_avertit_si_champ_vide():
+def test_app_erreur_si_champ_vide():
     at = app_logged_in(MOCK_CLIENT_USER)
     next(b for b in at.button if b.label == "Rechercher").click()
     at.run()
-    assert any("valide" in w.value for w in at.warning)
+    assert any("invalide" in e.value for e in at.error)
 
 
-def test_app_avertit_si_saisie_non_numerique():
+def test_app_erreur_si_saisie_non_numerique():
     at = app_logged_in(MOCK_CLIENT_USER)
     at.text_input[0].set_value("abc")
     next(b for b in at.button if b.label == "Rechercher").click()
     at.run()
-    assert any("valide" in w.value for w in at.warning)
+    assert any("invalide" in e.value for e in at.error)
 
 
-def test_app_avertit_si_saisie_decimale():
+def test_app_erreur_si_saisie_decimale():
     at = app_logged_in(MOCK_CLIENT_USER)
     at.text_input[0].set_value("123.45")
     next(b for b in at.button if b.label == "Rechercher").click()
     at.run()
-    assert any("valide" in w.value for w in at.warning)
+    assert any("invalide" in e.value for e in at.error)
+
+
+def test_app_erreur_si_entier_hors_limite():
+    at = app_logged_in(MOCK_CLIENT_USER)
+    at.text_input[0].set_value("56586613315")
+    next(b for b in at.button if b.label == "Rechercher").click()
+    at.run()
+    assert any("invalide" in e.value for e in at.error)
 
 
 # proba_class_1 < THRESHOLD → classe 0 (remboursé)
@@ -122,7 +130,8 @@ def test_app_client_trouve_credit_rembourse():
         "proba_class_0": 0.97,
         "proba_class_1": 0.03,
     }])
-    with patch("src.utils.database.get_client", return_value=mock_client):
+    with patch("src.utils.database.get_client", return_value=mock_client), \
+         patch("src.utils.logs.get_client", return_value=mock_client):
         at = app_logged_in(MOCK_CLIENT_USER)
         at.text_input[0].set_value("100001")
         next(b for b in at.button if b.label == "Rechercher").click()
@@ -137,7 +146,8 @@ def test_app_client_trouve_defaut_remboursement():
         "proba_class_0": 0.2,
         "proba_class_1": 0.8,
     }])
-    with patch("src.utils.database.get_client", return_value=mock_client):
+    with patch("src.utils.database.get_client", return_value=mock_client), \
+         patch("src.utils.logs.get_client", return_value=mock_client):
         at = app_logged_in(MOCK_CLIENT_USER)
         at.text_input[0].set_value("100002")
         next(b for b in at.button if b.label == "Rechercher").click()
@@ -148,12 +158,13 @@ def test_app_client_trouve_defaut_remboursement():
 
 def test_app_client_non_trouve():
     mock_client = make_mock_supabase([])
-    with patch("src.utils.database.get_client", return_value=mock_client):
+    with patch("src.utils.database.get_client", return_value=mock_client), \
+         patch("src.utils.logs.get_client", return_value=mock_client):
         at = app_logged_in(MOCK_CLIENT_USER)
         at.text_input[0].set_value("999999")
         next(b for b in at.button if b.label == "Rechercher").click()
         at.run()
-    assert any("Aucune prédiction" in w.value for w in at.warning)
+    assert any("introuvable" in e.value for e in at.error)
 
 
 def test_app_affiche_les_deux_metriques():
@@ -161,7 +172,8 @@ def test_app_affiche_les_deux_metriques():
         "proba_class_0": 0.72,
         "proba_class_1": 0.28,
     }])
-    with patch("src.utils.database.get_client", return_value=mock_client):
+    with patch("src.utils.database.get_client", return_value=mock_client), \
+         patch("src.utils.logs.get_client", return_value=mock_client):
         at = app_logged_in(MOCK_CLIENT_USER)
         at.text_input[0].set_value("100003")
         next(b for b in at.button if b.label == "Rechercher").click()
@@ -177,7 +189,8 @@ def test_seuil_juste_en_dessous_donne_credit_rembourse():
         "proba_class_0": 1 - 0.09,
         "proba_class_1": 0.09,
     }])
-    with patch("src.utils.database.get_client", return_value=mock_client):
+    with patch("src.utils.database.get_client", return_value=mock_client), \
+         patch("src.utils.logs.get_client", return_value=mock_client):
         at = app_logged_in(MOCK_CLIENT_USER)
         at.text_input[0].set_value("100004")
         next(b for b in at.button if b.label == "Rechercher").click()
@@ -191,7 +204,8 @@ def test_seuil_egal_donne_defaut():
         "proba_class_0": 1 - THRESHOLD,
         "proba_class_1": THRESHOLD,
     }])
-    with patch("src.utils.database.get_client", return_value=mock_client):
+    with patch("src.utils.database.get_client", return_value=mock_client), \
+         patch("src.utils.logs.get_client", return_value=mock_client):
         at = app_logged_in(MOCK_CLIENT_USER)
         at.text_input[0].set_value("100005")
         next(b for b in at.button if b.label == "Rechercher").click()
@@ -204,7 +218,8 @@ def test_app_administrateur_voit_section_debug():
         "proba_class_0": 0.9,
         "proba_class_1": 0.1,
     }])
-    with patch("src.utils.database.get_client", return_value=mock_client):
+    with patch("src.utils.database.get_client", return_value=mock_client), \
+         patch("src.utils.logs.get_client", return_value=mock_client):
         at = app_logged_in(MOCK_ADMIN_USER)
         at.text_input[0].set_value("100001")
         next(b for b in at.button if b.label == "Rechercher").click()
@@ -217,7 +232,8 @@ def test_app_client_ne_voit_pas_section_debug():
         "proba_class_0": 0.9,
         "proba_class_1": 0.1,
     }])
-    with patch("src.utils.database.get_client", return_value=mock_client):
+    with patch("src.utils.database.get_client", return_value=mock_client), \
+         patch("src.utils.logs.get_client", return_value=mock_client):
         at = app_logged_in(MOCK_CLIENT_USER)
         at.text_input[0].set_value("100001")
         next(b for b in at.button if b.label == "Rechercher").click()
