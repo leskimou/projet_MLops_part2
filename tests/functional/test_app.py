@@ -35,7 +35,7 @@ def app_logged_in(user):
 def test_login_affiche_le_titre():
     at = AppTest.from_file(APP_PATH)
     at.run()
-    assert at.title[0].value == "Prédiction de crédit client"
+    assert at.title[0].value == "Prédiction remboursement de crédit"
 
 
 def test_login_affiche_sous_titre_connexion():
@@ -79,7 +79,7 @@ def test_login_erreur_si_identifiants_incorrects():
 
 def test_app_affiche_le_titre():
     at = app_logged_in(MOCK_CLIENT_USER)
-    assert at.title[0].value == "Prédiction de crédit client"
+    assert at.title[0].value == "Prédiction remboursement de crédit"
 
 
 def test_app_affiche_champ_sk_id():
