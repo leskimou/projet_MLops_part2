@@ -73,12 +73,12 @@ def test_authenticate_succes_client():
     assert result == user
 
 
-def test_authenticate_succes_developpeur():
-    user = make_user(role="developpeur", password="mdpdev")
+def test_authenticate_succes_administrateur():
+    user = make_user(role="administrateur", password="mdpadmin")
     mock_client = make_mock_supabase([user])
     with patch("src.utils.auth.get_client", return_value=mock_client):
-        result = authenticate("testuser", "mdpdev")
-    assert result["role"] == "developpeur"
+        result = authenticate("testuser", "mdpadmin")
+    assert result["role"] == "administrateur"
 
 
 def test_authenticate_echec_mauvais_mot_de_passe():

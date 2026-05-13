@@ -9,6 +9,7 @@ dependencies = [
     "imblearn>=0.0",
     "numpy>=2.4.4",
     "pandas>=3.0.2",
+    "plotly>=5.0",
     "psycopg2-binary>=2.9.12",
     "python-dotenv>=1.2.2",
     "scikit-learn>=1.8.0",
@@ -17,6 +18,9 @@ dependencies = [
     "bcrypt>=4.2.0",
     "streamlit>=1.57.0",
     "supabase>=2.29.0",
+    "jupyter>=1.1.1",
+    "ipykernel>=7.2.0",
+    "evidently>=0.7.21",
 ]
 
 [build-system]
