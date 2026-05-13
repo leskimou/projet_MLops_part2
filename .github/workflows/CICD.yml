@@ -68,12 +68,10 @@ jobs:
         run: |
           git config user.email "github-actions@github.com"
           git config user.name "github-actions"
-          git checkout -b hf-deployment HEAD
+          git checkout --orphan hf-deployment
           git rm -r docs/
-          git commit -m "Deploy to HF (exclude images)"
+          git commit -m "Deploy to HF"
           git push https://user:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE} hf-deployment:dev --force
-          git checkout -
-          git branch -D hf-deployment
 
   deploy-main:
     runs-on: ubuntu-latest
@@ -93,9 +91,7 @@ jobs:
         run: |
           git config user.email "github-actions@github.com"
           git config user.name "github-actions"
-          git checkout -b hf-deployment HEAD
+          git checkout --orphan hf-deployment
           git rm -r docs/
-          git commit -m "Deploy to HF (exclude images)"
+          git commit -m "Deploy to HF"
           git push https://user:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE} hf-deployment:main --force
-          git checkout -
-          git branch -D hf-deployment
