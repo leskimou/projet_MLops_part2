@@ -3,7 +3,6 @@ import streamlit as st
 
 from src.utils.database import get_client
 from src.utils.monitoring_stats import (
-    build_evolution_chart,
     build_histogram,
     compute_metrics,
 )
@@ -31,17 +30,6 @@ logs_50_resp = (
 )
 df_logs_50 = pd.DataFrame(logs_50_resp.data) if logs_50_resp.data else pd.DataFrame()
 
-# 2. Logs récents (500) pour l'évolution hebdo
-logs_500_resp = (
-    db.table("prediction_logs")
-    .select("sk_id_curr, requested_at")
-    .eq("found", True)
-    .order("requested_at", desc=True)
-    .limit(500)
-    .execute()
-)
-df_logs_500 = pd.DataFrame(logs_500_resp.data) if logs_500_resp.data else pd.DataFrame()
-
 # 3. Prédictions pour les sk_id consultés (50 derniers)
 df_preds_50 = pd.DataFrame()
 if not df_logs_50.empty:
@@ -54,19 +42,7 @@ if not df_logs_50.empty:
     )
     df_preds_50 = pd.DataFrame(preds_50_resp.data) if preds_50_resp.data else pd.DataFrame()
 
-# 4. Prédictions pour les sk_id consultés (500 derniers)
-df_preds_500 = pd.DataFrame()
-if not df_logs_500.empty:
-    sk_ids_500 = df_logs_500["sk_id_curr"].unique().tolist()
-    preds_500_resp = (
-        db.table("predictions")
-        .select("sk_id_curr, proba_class_1")
-        .in_("sk_id_curr", sk_ids_500)
-        .execute()
-    )
-    df_preds_500 = pd.DataFrame(preds_500_resp.data) if preds_500_resp.data else pd.DataFrame()
-
-# 5. Toutes les prédictions (sample 5000) pour l'histogramme
+# 4. Toutes les prédictions (sample 5000) pour l'histogramme
 hist_resp = (
     db.table("predictions")
     .select("proba_class_1")
@@ -95,26 +71,10 @@ st.divider()
 
 st.subheader("Analyse des scores")
 
-col_left, col_right = st.columns(2)
-
-with col_left:
-    if df_hist.empty:
-        st.info("Données de prédictions indisponibles.")
-    else:
-        st.plotly_chart(build_histogram(df_hist), use_container_width=True)
-
-with col_right:
-    if df_logs_500.empty or df_preds_500.empty:
-        st.info("Pas encore assez de données pour afficher l'évolution.")
-    else:
-        merged_500 = df_logs_500.merge(df_preds_500, on="sk_id_curr", how="inner")
-        weeks = merged_500["requested_at"].apply(
-            lambda x: pd.to_datetime(x).to_period("W")
-        ).nunique()
-        if weeks < 2:
-            st.info("Pas encore assez de semaines de données pour afficher l'évolution.")
-        else:
-            st.plotly_chart(build_evolution_chart(merged_500), use_container_width=True)
+if df_hist.empty:
+    st.info("Données de prédictions indisponibles.")
+else:
+    st.plotly_chart(build_histogram(df_hist), use_container_width=True)
 
 st.divider()
 

@@ -1,6 +1,5 @@
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 
 THRESHOLD = 0.0913
 
@@ -31,20 +30,4 @@ def build_histogram(predictions_df: pd.DataFrame) -> go.Figure:
     fig.add_vline(x=THRESHOLD, line_dash="dash", line_color="#e05c5c",
                   annotation_text=f"Seuil {THRESHOLD}")
     fig.update_layout(bargap=0.05)
-    return fig
-
-
-def build_evolution_chart(merged_df: pd.DataFrame) -> go.Figure:
-    df = merged_df.copy()
-    df["week"] = pd.to_datetime(df["requested_at"]).dt.to_period("W").dt.start_time
-    weekly = df.groupby("week")["proba_class_1"].mean().reset_index()
-    weekly.columns = ["Semaine", "Score moyen"]
-    fig = px.line(
-        weekly, x="Semaine", y="Score moyen",
-        title="Évolution du score moyen par semaine",
-        markers=True,
-    )
-    fig.add_hline(y=THRESHOLD, line_dash="dash", line_color="#e05c5c",
-                  annotation_text=f"Seuil {THRESHOLD}")
-    fig.update_yaxes(range=[0, 1])
     return fig

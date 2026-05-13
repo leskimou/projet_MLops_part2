@@ -1,7 +1,8 @@
 import streamlit as st
 from src.utils.auth import authenticate
 
-st.title("Prédiction de crédit client")
+st.set_page_config(layout="wide")
+st.title("Prédiction remboursement de crédit")
 st.subheader("Connexion")
 
 username = st.text_input("Nom d'utilisateur")

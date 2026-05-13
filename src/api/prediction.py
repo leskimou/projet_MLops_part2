@@ -5,7 +5,7 @@ import streamlit as st
 from src.utils.database import get_client
 from src.utils.logs import log_prediction_request
 
-st.title("Prédiction de crédit client")
+st.title("Prédiction remboursement de crédit")
 
 user = st.session_state.user
 
