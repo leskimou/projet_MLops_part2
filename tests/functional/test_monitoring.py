@@ -81,11 +81,11 @@ def test_monitoring_affiche_metriques_avec_donnees():
         nonlocal call_count
         call_count += 1
         mock_response = MagicMock()
-        # queries 1 and 2: logs (return logs data)
-        # queries 3 and 4: predictions (return preds data)
-        # query 5: histogram (return preds data)
-        # query 6: all logs table (return logs data)
-        if call_count in (1, 2, 6):
+        # query 1: logs_50 → logs data
+        # query 2: preds_50 → preds data
+        # query 3: hist → preds data
+        # query 4: all logs table → logs data
+        if call_count in (1, 4):
             mock_response.data = mock_logs_data
         else:
             mock_response.data = mock_preds_data

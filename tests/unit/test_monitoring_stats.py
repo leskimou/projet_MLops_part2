@@ -1,6 +1,6 @@
 import pandas as pd
 import pytest
-from src.utils.monitoring_stats import compute_metrics, build_histogram, build_evolution_chart, THRESHOLD
+from src.utils.monitoring_stats import compute_metrics, build_histogram, THRESHOLD
 
 
 def make_logs(n=5, inference_ms=50.0):
@@ -69,30 +69,6 @@ def test_build_histogram_contient_deux_traces():
     # one trace per Risque category (Remboursé and Défaut)
     assert len(fig.data) == 2
 
-
-# --- build_evolution_chart ---
-
-def test_build_evolution_chart_retourne_une_figure():
-    import plotly.graph_objects as go
-    df = pd.DataFrame({
-        "requested_at": pd.to_datetime(["2026-01-05", "2026-01-12", "2026-01-19"]),
-        "proba_class_1": [0.1, 0.2, 0.15],
-    })
-    fig = build_evolution_chart(df)
-    assert isinstance(fig, go.Figure)
-
-
-def test_build_evolution_chart_groupe_par_semaine():
-    df = pd.DataFrame({
-        "requested_at": pd.to_datetime([
-            "2026-01-05", "2026-01-06",  # week 1
-            "2026-01-12",                 # week 2
-        ]),
-        "proba_class_1": [0.1, 0.3, 0.2],
-    })
-    fig = build_evolution_chart(df)
-    # 2 weeks = 2 points on the curve
-    assert len(fig.data[0].x) == 2
 
 
 def test_compute_metrics_retourne_zeros_si_logs_vide():
