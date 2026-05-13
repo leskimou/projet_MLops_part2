@@ -69,7 +69,7 @@ jobs:
           git config user.email "github-actions@github.com"
           git config user.name "github-actions"
           git checkout -b hf-deployment HEAD
-          git rm -r docs/pics/
+          git rm -r docs/
           git commit -m "Deploy to HF (exclude images)"
           git push https://user:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE} hf-deployment:dev --force
           git checkout -
@@ -94,7 +94,7 @@ jobs:
           git config user.email "github-actions@github.com"
           git config user.name "github-actions"
           git checkout -b hf-deployment HEAD
-          git rm -r docs/pics/
+          git rm -r docs/
           git commit -m "Deploy to HF (exclude images)"
           git push https://user:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE} hf-deployment:main --force
           git checkout -
