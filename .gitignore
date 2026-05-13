@@ -18,6 +18,3 @@ data/*
 
 # Model files
 models/*
-
-# Copilot superpowers docs
-docs/superpowers/
