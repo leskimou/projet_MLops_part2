@@ -66,6 +66,8 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_SPACE: ${{ secrets.HF_SPACE }}
         run: |
+          git config user.email "github-actions@github.com"
+          git config user.name "github-actions"
           git checkout -b hf-deployment HEAD
           git rm -r docs/pics/
           git commit -m "Deploy to HF (exclude images)"
@@ -89,6 +91,8 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_SPACE: ${{ secrets.HF_SPACE }}
         run: |
+          git config user.email "github-actions@github.com"
+          git config user.name "github-actions"
           git checkout -b hf-deployment HEAD
           git rm -r docs/pics/
           git commit -m "Deploy to HF (exclude images)"
