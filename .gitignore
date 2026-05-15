@@ -18,3 +18,4 @@ data/*
 
 # Model files
 models/*
+catboost_info/*
