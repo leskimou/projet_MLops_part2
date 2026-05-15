@@ -62,17 +62,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Push vers HuggingFace Space (dev)
+      - name: Push vers HuggingFace Space (pre-prod)
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_SPACE: ${{ secrets.HF_SPACE }}
+          HF_SPACE: ${{ secrets.HF_SPACE_PREPROD }}
         run: |
           git config user.email "github-actions@github.com"
           git config user.name "github-actions"
           git checkout --orphan hf-deployment
           git rm -rf docs/
           git commit -m "Deploy to HF"
-          git push https://user:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE} hf-deployment:dev --force
+          git push https://user:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE} hf-deployment:main --force
 
   deploy-main:
     runs-on: ubuntu-latest
