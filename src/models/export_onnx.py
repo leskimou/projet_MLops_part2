@@ -8,19 +8,16 @@ def _find_savable_model(obj: Any):
     if hasattr(obj, "save_model"):
         return obj
 
-    # Lazy import to avoid requiring sklearn unless needed
     try:
         from sklearn.pipeline import Pipeline
     except Exception:
         Pipeline = None
 
     if Pipeline is not None and isinstance(obj, Pipeline):
-        # examine the final estimator in the pipeline
         final = obj.steps[-1][1]
         if hasattr(final, "save_model"):
             return final
 
-    # Fallback: try common attribute names
     for name in ("estimator", "final_estimator", "clf", "model"):
         candidate = getattr(obj, name, None)
         if candidate is not None and hasattr(candidate, "save_model"):
